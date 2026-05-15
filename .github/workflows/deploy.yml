@@ -3,40 +3,52 @@ name: Deploy to EC2 # GitHub Actions 탭에서 표시되는 workflow 이름
 on:
   push:
     branches:
-      [main] # main 브랜치에 push될 때마다 자동 실행
-      # 다른 브랜치 push에서는 실행 안 됨
+      - main # main 브랜치에 push될 때마다 자동 실행
 
-jobs:
-  deploy:
-    runs-on:
-      ubuntu-latest # GitHub가 제공하는 Ubuntu 가상머신에서 실행
-      # 이 가상머신이 EC2에 SSH 접속해서 명령어를 실행함
+jobs: # job 은 1개 이상의 job 으로 구성됨
+  deploy: # job 의 고유 id
+    runs-on: ubuntu-latest # GitHub이 제공하는 가상 컴퓨터에서 실행
 
     steps:
+      - name: 배포 성공
+        if: success()
+        run: echo "배포 완료!"
+
+      - name: 배포 실패
+        if: failure()
+        run: echo "배포 실패! 로그를 확인하세요."
+
+      - name: 명령어 여러개 한번에 사용할 경우
+        run: |
+          echo "Hello"
+          echo "World"
+
       - name: EC2 접속
         uses: appleboy/ssh-action@v1
+
         with:
           host: ${{ secrets.EC2_HOST }} # → 13.125.92.241
           username: ${{ secrets.EC2_USERNAME }} # → ubuntu
           key: ${{ secrets.EC2_KEY }} # → pem 내용
 
-          script: | # 실제 코드 수정하는 부분
+          script: |
             cd ~/board-app-github-actions-v1
             docker compose pull
             docker compose up -d
             docker image prune -f
 
 # ############################################################
-# ######    하지 말것. 백업용 ############################
-#           # script: |
-#             cd ~/board-app-github-actions-v1
-#             git pull origin main
-#             docker compose down
-#             docker compose up --build -d
-#             docker image prune -f
-
-#             # EC2 서버에서 실행할 명령어들
-# 						# cd           : 프로젝트 폴더로 이동
-# 						# compose pull : ECR에서 최신 이미지 받기
-# 						# compose up   : 컨테이너 실행
-# 						# prune        : 이전 이미지 삭제 (디스크 절약)
+# ###### 하지 말것. 백업용 ####################################
+#
+# script: |
+#   cd ~/board-app-github-actions-v1
+#   git pull origin main
+#   docker compose down
+#   docker compose up --build -d
+#   docker image prune -f
+#
+#   # EC2 서버에서 실행할 명령어들
+#   # cd           : 프로젝트 폴더로 이동
+#   # compose pull : ECR에서 최신 이미지 받기
+#   # compose up   : 컨테이너 실행
+#   # prune        : 이전 이미지 삭제 (디스크 절약)
