@@ -1,4 +1,4 @@
-name: Deploy to EC2 # GitHub Actions 탭에서 표시되는 workflow 이름.
+name: Deploy to EC2 # GitHub Actions 탭에서 표시되는 workflow 이름
 
 on:
   push:
