@@ -32,7 +32,7 @@ jobs: # job 은 1개 이상의 job 으로 구성됨
           key: ${{ secrets.EC2_KEY }} # → pem 내용
 
           script: |
-            cd ~/board-app-github-actions-v1
+            cd ~/board-app-rds-s3
             docker compose pull
             docker compose up -d
             docker image prune -f
