@@ -33,21 +33,24 @@ jobs: # job 은 1개 이상의 job 으로 구성됨
 
           script: |
             cd ~/board-app-rds-s3
+            git pull origin main
+            docker compose down
             docker compose pull
-            docker compose up -d
+            docker compose up --build -d
             docker image prune -f
 
 # ############################################################
 # ###### 하지 말것. 백업용 ####################################
 #
 # script: |
-#   cd ~/board-app-github-actions-v1
+#   cd ~/board-app-rds-s3
 #   git pull origin main
 #   docker compose down
 #   docker compose up --build -d
 #   docker image prune -f
 #
 #   # EC2 서버에서 실행할 명령어들
+#
 #   # cd           : 프로젝트 폴더로 이동
 #   # compose pull : ECR에서 최신 이미지 받기
 #   # compose up   : 컨테이너 실행
